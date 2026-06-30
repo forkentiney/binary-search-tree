@@ -1,2 +1,3 @@
-# binary-search-tree
-This was created as part of The Odin Project Curriculum
+# Binary Search Tree
+
+This was created as part of The Odin Project Curriculum.
