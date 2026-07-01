@@ -1,9 +1,10 @@
-function node(data, left = null, right = null) {
-	return { data: data, left: left, right: right };
+function node(data) {
+	return { data, left: null, right: null };
 };
 
 function tree(array) {
-	const root = buildTree(array, 0, array.length - 1);
+	const sortedArray = [...new Set(array)].sort((a, b) => a - b);
+	const root = buildTree(sortedArray, 0, sortedArray.length - 1);
 	return { root };
 }
 
