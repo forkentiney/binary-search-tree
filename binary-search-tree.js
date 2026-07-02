@@ -5,7 +5,23 @@ function node(data) {
 function tree(array) {
 	const sortedArray = [...new Set(array)].sort((a, b) => a - b);
 	const root = buildTree(sortedArray, 0, sortedArray.length - 1);
-	return { root };
+
+	const includes = (value, node) => {
+		if (!node) return false;
+		if (node.data === value) {
+			return true;
+		} else if (node.data < value) {
+			let nextNode = node.right;
+			return includes(value, nextNode);
+			console.log("Value is bigger");
+		} else if (node.data > value) {
+			return includes(value, node.left);
+			console.log("Value is smaller");
+		}; 
+		return false;
+	};
+
+	return { root, includes };
 }
 
 function buildTree(array, left, right) {
@@ -37,3 +53,5 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 }
 
 prettyPrint(test.root);
+
+console.log(test.includes(2, test.root));
