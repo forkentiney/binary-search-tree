@@ -11,17 +11,37 @@ function tree(array) {
 		if (node.data === value) {
 			return true;
 		} else if (node.data < value) {
-			let nextNode = node.right;
-			return includes(value, nextNode);
-			console.log("Value is bigger");
+			return includes(value, node.right);
 		} else if (node.data > value) {
 			return includes(value, node.left);
-			console.log("Value is smaller");
 		}; 
 		return false;
 	};
 
-	return { root, includes };
+	const insert = (value, root) => {
+		if (includes(value, root)) return;
+		if (root.data < value) {
+			if (!root.right) {
+				const newNode = node(value);
+				root.right = newNode;
+				return;
+			} else {
+				console.log("Trying deeper right");
+				return insert(value, root.right);
+			};
+		} else if (root.data > value) {
+			if (!root.left) {
+				const newNode = node(value);
+				root.left = newNode;
+				return;
+			} else {
+				console.log("Trying deeper left")
+				return insert(value, root.left);
+			};
+		};
+	};
+
+	return { root, includes, insert };
 }
 
 function buildTree(array, left, right) {
@@ -53,5 +73,3 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 }
 
 prettyPrint(test.root);
-
-console.log(test.includes(2, test.root));
