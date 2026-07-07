@@ -11,8 +11,7 @@ function tree(array) {
 		if (node.data === value) {
 			return true;
 		} else if (node.data < value) {
-			return includes(value, node.right);
-		} else if (node.data > value) {
+			return includes(value, node.right); } else if (node.data > value) {
 			return includes(value, node.left);
 		}; 
 		return false;
@@ -114,6 +113,21 @@ function tree(array) {
 		return result;
 	};
 
+	const postOrderForEach = (callback) => {
+		if (typeof callback !== 'function') throw new Error("Paramater is not a function");
+		const result = [];
+
+		const traverse = (node) => {
+			if (node === null) return;
+			traverse(node.left);
+			traverse(node.right);
+			result.push(callback(node.data));
+		};
+
+		traverse(root);
+		return result;
+	};
+
 	return { 
 		root,
 		includes,
@@ -121,7 +135,8 @@ function tree(array) {
 		deleteItem,
 		levelOrderForEach,
 		inOrderForEach, 
-		preOrderForEach
+		preOrderForEach,
+		postOrderForEach,
 	};
 };
 
@@ -161,3 +176,4 @@ function multiplyByTwo(value) {
 };
 console.log(test.inOrderForEach(multiplyByTwo));
 console.log(test.preOrderForEach(multiplyByTwo));
+console.log(test.postOrderForEach(multiplyByTwo));
