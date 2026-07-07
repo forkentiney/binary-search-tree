@@ -6,37 +6,38 @@ function tree(array) {
 	const sortedArray = [...new Set(array)].sort((a, b) => a - b);
 	const root = buildTree(sortedArray, 0, sortedArray.length - 1);
 
-	const includes = (value, node) => {
+	const includes = (value, node = root) => {
 		if (!node) return false;
 		if (node.data === value) {
 			return true;
 		} else if (node.data < value) {
-			return includes(value, node.right); } else if (node.data > value) {
+			return includes(value, node.right); 
+		} else if (node.data > value) {
 			return includes(value, node.left);
 		}; 
 		return false;
 	};
 
-	const insert = (value, root) => {
-		if (includes(value, root)) return;
+	const insert = (value, node = root) => {
+		if (includes(value, node)) return;
 
-		if (root.data < value) {
-			if (!root.right) {
+		if (node.data < value) {
+			if (!node.right) {
 				const newNode = node(value);
-				root.right = newNode;
+				node.right = newNode;
 				return;
 			} else {
 				console.log("Trying deeper right");
-				return insert(value, root.right);
+				return insert(value, node.right);
 			};
-		} else if (root.data > value) {
-			if (!root.left) {
+		} else if (node.data > value) {
+			if (!node.left) {
 				const newNode = node(value);
-				root.left = newNode;
+				node.left = newNode;
 				return;
 			} else {
 				console.log("Trying deeper left")
-				return insert(value, root.left);
+				return insert(value, node.left);
 			};
 		};
 	};
@@ -128,6 +129,35 @@ function tree(array) {
 		return result;
 	};
 
+	const height = (value) => {
+		let height = 0;
+		const goToNodeWith = (value, node = root) => {
+			if (!node) throw new Error("Value not in tree");
+			if (node.data === value) {
+				return node;
+			} else if (node.data < value) {
+				return goToNodeWith(value, node.right); 
+			} else if (node.data > value) {
+				return goToNodeWith(value, node.left);
+			}; 
+		};
+		const countFrom = (node) => {
+			if (!node) return;
+			if (node.left) {
+				height++;
+				countFrom(node.left);
+			} else if (node.right) {
+				height++;
+				countFrom(node.right);
+			};
+		};
+		const current = goToNodeWith(value);
+		console.log(current.data);
+		countFrom(current);
+
+		return height;
+	};
+
 	return { 
 		root,
 		includes,
@@ -137,6 +167,7 @@ function tree(array) {
 		inOrderForEach, 
 		preOrderForEach,
 		postOrderForEach,
+		height,
 	};
 };
 
@@ -174,6 +205,4 @@ function multiplyByTwo(value) {
 	const result = value * 2;
 	return result;
 };
-console.log(test.inOrderForEach(multiplyByTwo));
-console.log(test.preOrderForEach(multiplyByTwo));
-console.log(test.postOrderForEach(multiplyByTwo));
+console.log(test.height(6345));
