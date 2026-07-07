@@ -152,10 +152,26 @@ function tree(array) {
 			};
 		};
 		const current = goToNodeWith(value);
-		console.log(current.data);
 		countFrom(current);
-
 		return height;
+	};
+
+	const depth = (value, node = root) => {
+		let depth = 0;
+		const goToNodeWith = (value, node = root) => {
+			if (!node) throw new Error("Value not in tree");
+			if (node.data === value) {
+				return;
+			} else if (node.data < value) {
+				depth++;
+				return goToNodeWith(value, node.right); 
+			} else if (node.data > value) {
+				depth++;
+				return goToNodeWith(value, node.left);
+			}; 
+		};
+		goToNodeWith(value);
+		return depth;
 	};
 
 	return { 
@@ -168,6 +184,7 @@ function tree(array) {
 		preOrderForEach,
 		postOrderForEach,
 		height,
+		depth,
 	};
 };
 
@@ -205,4 +222,5 @@ function multiplyByTwo(value) {
 	const result = value * 2;
 	return result;
 };
-console.log(test.height(6345));
+console.log(test.height(7));
+console.log(test.depth(7));
