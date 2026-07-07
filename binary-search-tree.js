@@ -84,7 +84,22 @@ function tree(array) {
 		return result;
 	};
 
-	return { root, includes, insert, deleteItem, levelOrderForEach };
+	const inOrderForEach = (callback) => {
+		if (typeof callback !== 'function') throw new Error("Paramater is not a function");
+		const result = [];
+
+		const traverse = (node) => {
+			if (node === null) return;
+			traverse(node.left);
+			result.push(callback(node.data));
+			traverse(node.right);
+		};
+
+		traverse(root);
+		return result;
+	};
+
+	return { root, includes, insert, deleteItem, levelOrderForEach, inOrderForEach };
 };
 
 function buildTree(array, left, right) {
@@ -121,5 +136,4 @@ function multiplyByTwo(value) {
 	const result = value * 2;
 	return result;
 };
-
-console.log(test.levelOrderForEach(multiplyByTwo));
+console.log(test.inOrderForEach(multiplyByTwo));
