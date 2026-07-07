@@ -20,6 +20,7 @@ function tree(array) {
 
 	const insert = (value, root) => {
 		if (includes(value, root)) return;
+
 		if (root.data < value) {
 			if (!root.right) {
 				const newNode = node(value);
@@ -41,8 +42,34 @@ function tree(array) {
 		};
 	};
 
-	return { root, includes, insert };
-}
+	const deleteItem = (value, root) => {
+		const getSuccessor = (root) => {
+			current = root.right;
+			while (current && current.left) {
+				current = current.left;
+			};
+			return current;
+		};
+
+		if (!root) return root;
+
+		if (root.data > value) {
+			root.left = deleteItem(value, root.left);
+		} else if (root.data < value) {
+			root.right = deleteItem(value, root.right);
+		} else {
+			if (!root.left) return root.right;
+			if (!root.right) return root.left;
+
+			const successor = getSuccessor(root);
+			root.data = successor.data;
+			root.right = deleteItem(successor.data, root.right);
+		};
+		return root;
+	};
+
+	return { root, includes, insert, deleteItem };
+};
 
 function buildTree(array, left, right) {
 	if (left > right) return null;
@@ -72,4 +99,7 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
 }
 
+prettyPrint(test.root);
+
+test.deleteItem(4, test.root);
 prettyPrint(test.root);
