@@ -1,4 +1,4 @@
-function node(data) {
+function createNode(data) {
 	return { data, left: null, right: null };
 };
 
@@ -19,24 +19,22 @@ function tree(array) {
 	};
 
 	const insert = (value, node = root) => {
-		if (includes(value, node)) return;
+		if (includes(value)) return;
 
 		if (node.data < value) {
 			if (!node.right) {
-				const newNode = node(value);
+				const newNode = createNode(value);
 				node.right = newNode;
 				return;
 			} else {
-				console.log("Trying deeper right");
 				return insert(value, node.right);
 			};
 		} else if (node.data > value) {
 			if (!node.left) {
-				const newNode = node(value);
+				const newNode = createNode(value);
 				node.left = newNode;
 				return;
 			} else {
-				console.log("Trying deeper left")
 				return insert(value, node.left);
 			};
 		};
@@ -130,7 +128,6 @@ function tree(array) {
 	};
 
 	const height = (value) => {
-		let height = 0;
 		const goToNodeWith = (value, node = root) => {
 			if (!node) throw new Error("Value not in tree");
 			if (node.data === value) {
@@ -141,18 +138,15 @@ function tree(array) {
 				return goToNodeWith(value, node.left);
 			}; 
 		};
-		const countFrom = (node) => {
-			if (!node) return;
-			if (node.left) {
-				height++;
-				countFrom(node.left);
-			} else if (node.right) {
-				height++;
-				countFrom(node.right);
-			};
+		const node = goToNodeWith(value);
+		const getHeight = (node) => {
+			if (!node) return -1;
+			const leftHeight = getHeight(node.left);
+			const rightHeight = getHeight(node.right);
+			const height = Math.max(leftHeight, rightHeight) + 1;
+			return height;
 		};
-		const current = goToNodeWith(value);
-		countFrom(current);
+		const height = getHeight(node);
 		return height;
 	};
 
@@ -174,6 +168,38 @@ function tree(array) {
 		return depth;
 	};
 
+	const isBalanced = (node = root) => {
+		const findDifference = (node) => {
+			let leftHeight;
+			let rightHeight;
+			if (node.left) {
+				const left = node.left;
+				leftHeight = height(left.data);
+			} else {
+				leftHeight = 0;
+			};
+			if (node.right) {
+				const right = node.right;
+				rightHeight = height(right.data);
+			} else {
+				rightHeight = 0;
+			};
+			if (leftHeight >= rightHeight) {
+				const difference = leftHeight - rightHeight;
+				return difference;
+			} else {
+				const difference = rightHeight - leftHeight;
+				return difference;
+			};
+		};
+		const difference = findDifference(node);
+		console.log(difference);
+		if (difference > 1) return false;
+		if (node.left) return isBalanced(node.left);
+		if (node.right) return isBalanced(node.right);
+		return true;
+	};
+
 	return { 
 		root,
 		includes,
@@ -185,6 +211,7 @@ function tree(array) {
 		postOrderForEach,
 		height,
 		depth,
+		isBalanced,
 	};
 };
 
@@ -192,7 +219,7 @@ function buildTree(array, left, right) {
 	if (left > right) return null;
 
 	let mid = left + Math.floor((right - left) / 2);
-	let root = node(array[mid]);
+	let root = createNode(array[mid]);
 
 	root.left = buildTree(array, left, mid - 1);
 	root.right = buildTree(array, mid + 1, right);
@@ -222,5 +249,10 @@ function multiplyByTwo(value) {
 	const result = value * 2;
 	return result;
 };
-console.log(test.height(7));
-console.log(test.depth(7));
+
+console.log(test.isBalanced());
+test.insert(7000);
+test.insert(8000);
+test.insert(9000);
+prettyPrint(test.root);
+console.log(test.isBalanced());
