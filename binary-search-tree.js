@@ -3,8 +3,20 @@ function createNode(data) {
 };
 
 function tree(array) {
-	const sortedArray = [...new Set(array)].sort((a, b) => a - b);
-	const root = buildTree(sortedArray, 0, sortedArray.length - 1);
+	const buildTree = (array, left, right) => {
+		if (left > right) return null;
+
+		let mid = left + Math.floor((right - left) / 2);
+		let root = createNode(array[mid]);
+
+		root.left = buildTree(array, left, mid - 1);
+		root.right = buildTree(array, mid + 1, right);
+
+		return root;
+	};
+
+	let sortedArray = [...new Set(array)].sort((a, b) => a - b);
+	let root = buildTree(sortedArray, 0, sortedArray.length - 1);
 
 	const includes = (value, node = root) => {
 		if (!node) return false;
@@ -193,11 +205,33 @@ function tree(array) {
 			};
 		};
 		const difference = findDifference(node);
-		console.log(difference);
 		if (difference > 1) return false;
 		if (node.left) return isBalanced(node.left);
 		if (node.right) return isBalanced(node.right);
 		return true;
+	};
+
+	const rebalance = () => {
+		const array = [];
+		const traverse = (node = root) => {
+			if (!node) return;
+			array.push(node.data);
+			traverse(node.left);
+			traverse(node.right);
+		};
+		traverse();
+		sortedArray = [...new Set(array)].sort((a, b) => a - b);
+		root = buildTree(sortedArray, 0, sortedArray.length - 1);
+	};
+
+	const prettyPrint = (node = root, prefix = '', isLeft = true) => {
+		if (node === null || node === undefined) {
+			return;
+		};
+
+		prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+		console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+		prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
 	};
 
 	return { 
@@ -212,47 +246,28 @@ function tree(array) {
 		height,
 		depth,
 		isBalanced,
+		rebalance,
+		prettyPrint,
 	};
 };
 
-function buildTree(array, left, right) {
-	if (left > right) return null;
-
-	let mid = left + Math.floor((right - left) / 2);
-	let root = createNode(array[mid]);
-
-	root.left = buildTree(array, left, mid - 1);
-	root.right = buildTree(array, mid + 1, right);
-
-	return root;
-};
 
 // Test code
 const array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const test = tree(array);
 
-console.log(test);
+test.prettyPrint();
+console.log(`Is it balanced? ${test.isBalanced()}`);
 
-const prettyPrint = (node, prefix = '', isLeft = true) => {
-  if (node === null || node === undefined) {
-    return;
-  }
-
-  prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
-  console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
-  prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
-}
-
-prettyPrint(test.root);
-
-function multiplyByTwo(value) {
-	const result = value * 2;
-	return result;
-};
-
-console.log(test.isBalanced());
 test.insert(7000);
 test.insert(8000);
 test.insert(9000);
-prettyPrint(test.root);
-console.log(test.isBalanced());
+
+test.prettyPrint();
+console.log(`Is it balanced? ${test.isBalanced()}`);
+
+console.log(`Rebalancing...`);
+test.rebalance();
+
+test.prettyPrint();
+console.log(`Is it balanced? ${test.isBalanced()}`);
